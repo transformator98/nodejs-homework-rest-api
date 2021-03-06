@@ -30,8 +30,8 @@ const schemaUpdateContact = Joi.object({
       format: 'international',
       strict: true,
     })
-    .required(),
-});
+    .optional(),
+}).min(1);
 
 const validate = (schema, obj, next) => {
   const { error } = schema.validate(obj);
