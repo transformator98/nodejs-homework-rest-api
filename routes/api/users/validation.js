@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { HttpCode } = require('../../../helpers/constants');
+// const phoneVal = Joi.extend(require('joi-phone-number'));
 
 const schemaRegistrationUser = Joi.object({
   name: Joi.string().alphanum().min(2).max(30).optional(),
@@ -9,20 +10,28 @@ const schemaRegistrationUser = Joi.object({
       minDomainSegments: 2,
       tlds: { allow: ['com', 'net'] },
     }),
-  password: Joi.string().required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+  // phone: phoneVal
+  //   .string()
+  //   .required()
+  //   .phoneNumber({ defaultCountry: 'BE', format: 'national' }),
+  password: Joi.string().min(5).max(30).required(),
   subscription: Joi.string().optional(),
 });
 
 const schemaLoginUser = Joi.object({
-  token: [Joi.string(), Joi.number()],
+  // token: [Joi.string(), Joi.number()],
   email: Joi.string()
     .required()
     .email({
       minDomainSegments: 2,
       tlds: { allow: ['com', 'net'] },
     }),
-  password: Joi.string().required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-});
+  // phone: phoneVal
+  //   .string()
+  //   .optional()
+  //   .phoneNumber({ defaultCountry: 'BE', format: 'national' }),
+  password: Joi.string().min(7).max(30).required(),
+}).min(1);
 
 const validate = (schema, obj, next) => {
   const { error } = schema.validate(obj);

@@ -11,10 +11,10 @@ const findByVerifyToken = async verifyToken => {
 };
 
 const create = async ({
-  name,
+  name = 'Guest',
   email,
   password,
-  subscription,
+  subscription = 'free',
   verify,
   verifyToken,
 }) => {

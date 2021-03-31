@@ -13,7 +13,7 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: [true, 'Set email for user'],
-      unique: true, //для уникальности
+      unique: true,
       validate(value) {
         const re = /\S+@\S+\.\S+/;
         return re.test(String(value).toLowerCase());

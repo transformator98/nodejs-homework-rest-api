@@ -11,7 +11,7 @@ const listContacts = async (
       select: filter ? filter.split('|').join(' ') : '',
       page,
       sort: {
-        ...(sortBy ? { [`${sortBy}`]: 1 } : {}), //name:1 если sortBy = name
+        ...(sortBy ? { [`${sortBy}`]: 1 } : {}),
         ...(sortByDesc ? { [`${sortByDesc}`]: -1 } : {}),
       },
       populate: {
@@ -30,7 +30,7 @@ const listContacts = async (
   };
 };
 
-const getContactById = async id => {
+const getContactById = async (id, userId) => {
   return await Contact.findOne({ _id: id, owner: userId }).populate({
     path: 'owner',
     select: 'name email subscription -_id',

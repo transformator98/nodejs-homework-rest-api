@@ -9,9 +9,12 @@ require('dotenv').config();
 const { HttpCode, SECRET_KEY } = require('../helpers/constants');
 const EmailService = require('../services/email');
 const createFolderIsExist = require('../helpers/create-dir');
+// const SECRET_KEY = process.env.JWT_SECRET
 
 const reg = async (req, res, next) => {
   try {
+    console.log('EMAIL', req.body.email);
+    console.log('Name', req.body.name);
     const { email, name } = req.body;
 
     const user = await Users.findByEmail(email);
@@ -25,6 +28,9 @@ const reg = async (req, res, next) => {
         message: 'Email in use',
       });
     }
+
+    // const newUser = await Users.create(req.body);
+    // TODO найти ошибку
     const verifyToken = nanoid();
     const emailService = new EmailService(process.env.NODE_ENV);
     await emailService.sendEmail(verifyToken, email, name);
@@ -33,6 +39,7 @@ const reg = async (req, res, next) => {
       verify: false,
       verifyToken,
     });
+    // TODO найти ошибку
 
     return res.status(HttpCode.CREATED).json({
       status: 'success',
@@ -55,7 +62,7 @@ const login = async (req, res, next) => {
 
     const user = await Users.findByEmail(email);
     const isValidPassword = await user?.validPassword(password);
-    if (!user || !isValidPassword) {
+    if (!user || !isValidPassword || !user.verify) {
       return res.status(HttpCode.UNAUTHORIZED).json({
         status: 'error',
         code: HttpCode.UNAUTHORIZED,
@@ -63,14 +70,14 @@ const login = async (req, res, next) => {
         message: 'Invalid credentials',
       });
     }
-    if (!user.verify) {
-      return res.status(HttpCode.UNAUTHORIZED).json({
-        status: 'error',
-        code: HttpCode.UNAUTHORIZED,
-        data: 'Unauthorized',
-        message: 'You have not passed verification!',
-      });
-    }
+    // if (!user.verify) {
+    //   return res.status(HttpCode.UNAUTHORIZED).json({
+    //     status: 'error',
+    //     code: HttpCode.UNAUTHORIZED,
+    //     data: 'Unauthorized',
+    //     message: 'You have not passed verification!',
+    //   });
+    // }
     const id = user._id;
     const payload = { id };
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '12h' });
@@ -121,6 +128,7 @@ const update = async (req, res, next) => {
 
 const avatars = async (req, res, next) => {
   try {
+    console.log('ID>>>>>>>>>>', req.user.id);
     const id = req.user.id;
     const newUrl = await saveAvatarToStatic(req);
     const avatarUrl = `http://localhost:3000/${newUrl}`;
@@ -140,6 +148,7 @@ const saveAvatarToStatic = async req => {
   const id = req.user.id;
   const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
   const pathFile = req.file.path;
+  console.log('req.file.originalname>>>>>>>', req.file.originalname);
   const newNameAvatar = `${Date.now()}-${req.file.originalname}`;
   const img = await Jimp.read(pathFile);
   await img

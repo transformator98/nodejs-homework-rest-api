@@ -10,7 +10,7 @@ const contactSchema = new Schema(
     email: {
       type: String,
       // required: [true, 'Set email for contact'],
-      unique: true, //для уникальности
+      unique: true,
     },
     phone: {
       type: String,

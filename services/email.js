@@ -1,8 +1,6 @@
 const Mailgen = require('mailgen');
 const sgMail = require('@sendgrid/mail');
 const { dev, stage, prod } = require('../config/email.json');
-console.log('DEV>>>>>>>>>', dev);
-
 require('dotenv').config();
 
 class EmailService {
@@ -25,6 +23,7 @@ class EmailService {
         break;
     }
   }
+
   #createTemplate(verifyToken, name = 'Guest') {
     const mailGenerator = new this.#GenerateTemplate({
       theme: 'cerberus',
@@ -53,6 +52,7 @@ class EmailService {
 
     return mailGenerator.generate(template);
   }
+
   async sendEmail(verifyToken, email, name) {
     const emailBody = this.#createTemplate(verifyToken, name);
     this.#sender.setApiKey(process.env.SENDGRID_API_KEY);

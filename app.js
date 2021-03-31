@@ -2,6 +2,7 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
+
 const path = require('path');
 const { limiter } = require('./helpers/rate-limit');
 const { HttpCode } = require('./helpers/constants');
@@ -11,7 +12,6 @@ require('dotenv').config();
 const app = express();
 
 const AVATARS_OF_USERS = process.env.AVATARS_OF_USERS;
-
 app.use(express.static(path.join(__dirname, AVATARS_OF_USERS)));
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
@@ -29,13 +29,12 @@ app.use((req, res) => {
   res.status(HttpCode.NOT_FOUND).json({
     status: 'error',
     code: HttpCode.NOT_FOUND,
-    message: 'Use api on routes: /api/contacts',
+    message: `Use api on routes: ${res.status.code}`,
     data: 'Not Found',
   });
 });
 
 app.use((err, req, res, next) => {
-  console.log(err);
   res.status(err.code || HttpCode.INTERNAL_SERVER_ERROR).json({
     status: 'fail',
     code: HttpCode.INTERNAL_SERVER_ERROR,
